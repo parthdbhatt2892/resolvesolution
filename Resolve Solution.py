@@ -159,4 +159,3 @@ def connected_cities(flights,airports):
 
 connected_cities("flights.csv","airports.csv")
 ## Result- [New York, Los Angeles]
-
