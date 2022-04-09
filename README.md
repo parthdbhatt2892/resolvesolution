@@ -1,6 +1,4 @@
-evolve-Solutions-Assignment
 
-Backend Engineer Exercise
 Input
 The input data sources are comprised of following csv files (in data.tar.gz):
 
