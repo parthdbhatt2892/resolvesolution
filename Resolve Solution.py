@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[126]:
+# In[2]:
 
 
 import pandas as pd
@@ -11,7 +11,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 
 # ### 1. how many total number of days does the flights table cover?
 
-# In[127]:
+# In[4]:
 
 
 def operating_days_by_flight(file):
@@ -23,7 +23,7 @@ def operating_days_by_flight(file):
     df_flight=pd.read_csv(file)
     
     # Multiple flights can be operated on the same day so considering the unique days covered by the flight
-    return flights[['year','month','day']].drop_duplicates().count()['day']
+    return df_flight[['year','month','day']].drop_duplicates().count()['day']
 
 operating_days_by_flight("flights.csv")
 ## Result- 365
@@ -32,7 +32,7 @@ operating_days_by_flight("flights.csv")
 # ### 2. how many departure cities (not airports) does the flights database cover?
 # 
 
-# In[128]:
+# In[5]:
 
 
 def departure_cities(flights,airports):
@@ -53,7 +53,7 @@ departure_cities('flights.csv','airports.csv')
 
 # ### 3. what is the relationship between flights and planes tables?
 
-# In[129]:
+# In[7]:
 
 
 def flights_rel_planes(flights,planes):
@@ -71,7 +71,7 @@ def flights_rel_planes(flights,planes):
     flight_cols=df_flights.columns.to_list()
     
     #list out all the columns in plane dataframe
-    flight_cols=df_flights.columns.to_list()
+    plane_cols=df_planes.columns.to_list()
     
     # returns the common columns present in both the lists(datasets)
     return set(flight_cols)&set(plane_cols)
@@ -83,10 +83,12 @@ flights_rel_planes("flights.csv","planes.csv")
 
 # ### Additional work: Scatter plot to find out the relationship between tailnum and no of flights operated 
 
-# In[130]:
+# In[10]:
 
 
 # joining two datasets
+df_flights=pd.read_csv("flights.csv")
+df_planes=pd.read_csv("planes.csv")
 df_rel=df_flights.merge(df_planes,how='inner',on=['tailnum','year'])
 
 # counting no of flights grouped by tailnum and year
@@ -99,7 +101,7 @@ df_rel_graph.plot.scatter('flight','tailnum',figsize=(20,20))
 
 # ### 4. which airplane manufacturer incurred the most delays in the analysis period?
 
-# In[190]:
+# In[11]:
 
 
 def delay_by_mf(flights,planes):
@@ -123,7 +125,7 @@ def delay_by_mf(flights,planes):
     #adding column total delay considering departure plus arrival delay per manufacturer
     df_agg['total_delay']=df_agg['dep_delay']+df_agg['arr_delay']
     
-    return df_agg[(df_agg['total_delay']==df_agg.total_delay.max())]['manufacturer']
+    return df_agg[(df_agg['total_delay']==df_agg.total_delay.max())]['manufacturer'].to_list()
 
 
 delay_by_mf("flights.csv","planes.csv")
@@ -133,7 +135,7 @@ delay_by_mf("flights.csv","planes.csv")
 
 # ### 5. which are the two most connected cities?
 
-# In[234]:
+# In[12]:
 
 
 def connected_cities(flights,airports):
@@ -159,3 +161,33 @@ def connected_cities(flights,airports):
 
 connected_cities("flights.csv","airports.csv")
 ## Result- [New York, Los Angeles]
+
+
+# ### Test cases:
+
+# In[13]:
+
+
+import pytest
+
+def test1():
+    result = operating_days_by_flight("flights.csv")
+    assert result == 365
+    
+def test2():
+    result= departure_cities("flights.csv","airports.csv")
+    assert result==2
+    
+def test3(): 
+    result= flights_rel_planes("flights.csv","planes.csv")
+    assert result=={'tailnum','year'}
+
+def test4(): 
+    result=delay_by_mf("flights.csv","planes.csv")
+    assert result== ['EMBRAER']
+    
+def test5(): 
+    result=connected_cities("flights.csv","airports.csv")
+    assert result== ["New York", "Los Angeles"]
+
+
